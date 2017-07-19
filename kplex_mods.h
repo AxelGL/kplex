@@ -7,6 +7,8 @@ struct iftypedef iftypes[] = {
     { GLOBAL, "global" , NULL, NULL },
     { FILEIO, "file", init_file, ifdup_file },
     { SERIAL, "serial", init_serial, ifdup_serial },
+    { VICTRON, "victron", init_victron, ifdup_serial },
+    { NASA_CLIPPER, "nasa_clipper", init_nasa_clipper, NULL },
     { PTY, "pty", init_pty, ifdup_serial },
     { TCP, "tcp", init_tcp, ifdup_tcp },
     { UDP, "udp", init_udp, ifdup_udp },

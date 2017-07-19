@@ -83,6 +83,8 @@ enum itype {
     GLOBAL,
     FILEIO,
     SERIAL,
+    VICTRON, 
+    NASA_CLIPPER, 
     PTY,
     TCP,
     UDP,
@@ -246,6 +248,8 @@ int mysleep(time_t);
 
 iface_t *init_file( iface_t *);
 iface_t *init_serial(iface_t *);
+iface_t *init_victron(iface_t *);
+iface_t *init_nasa_clipper(iface_t *);
 iface_t *init_pty(iface_t *);
 iface_t *init_udp(iface_t *);
 iface_t *init_tcp(iface_t *);
@@ -255,6 +259,8 @@ iface_t *init_mcast(iface_t *);
 iface_t *init_seatalk(iface_t *);
 
 void *ifdup_serial(void *);
+void *ifdup_victron(void *);
+void *ifdup_nasa_clipper(void *);
 void *ifdup_file(void *);
 void *ifdup_udp(void *);
 void *ifdup_tcp(void *);

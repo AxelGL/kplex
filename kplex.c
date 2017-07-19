@@ -1167,7 +1167,7 @@ size_t gettag(iface_t *ifa, char *buf, senblk_t *sptr)
     return(len);
 }
 
-/* generic read routine
+/* generic read routine for NMEA data
  * Args: Interface Pointer
  * Returns: nothing
  */ 
@@ -1185,8 +1185,9 @@ void do_read(iface_t *ifa)
     senstate=SEN_NODATA;
 
     while ((nread=(*ifa->readbuf)(ifa,buf)) > 0) {
-        for(bptr=buf,eptr=buf+nread;bptr<eptr;bptr++) {
-            switch (*bptr) {
+       DEBUG(9,"kplex.c Buffer %s nread=%i loose=%i nocr=%i, BUFSIZ=%i",buf, nread, loose, nocr, BUFSIZ);
+       for(bptr=buf,eptr=buf+nread;bptr<eptr;bptr++) {
+         switch (*bptr) {
             case '$':
             case '!':
                 ptr=sblk.data;
@@ -1246,20 +1247,21 @@ void do_read(iface_t *ifa)
                 break;
             }
 
-            if (senstate != SEN_SENPROC && senstate != SEN_TAGPROC) {
-                if (senstate != SEN_NODATA )
-                    senstate=SEN_NODATA;
-                continue;
-            }
+         if (senstate != SEN_SENPROC && senstate != SEN_TAGPROC) {
+             if (senstate != SEN_NODATA )
+                 senstate=SEN_NODATA;
+             continue;
+         }
 
-            if (count++ > countmax) {
-                senstate=SEN_NODATA;
-                continue;
-            }
+         if (count++ > countmax) {
+             senstate=SEN_NODATA;
+             continue;
+         }
 
-            *ptr++=*bptr;
-        }
+         *ptr++=*bptr;
+       }
     }
+    //DEBUG(9,"kplex.c ptr=%s ", ptr);
     iface_thread_exit(errno);
 }
 

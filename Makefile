@@ -1,14 +1,14 @@
 OS=$(shell uname -s)
-ifneq ("$(wildcard .git)","")
-CFLAGS?=-g -Wall
-VERSION := $(shell git describe --dirty --tags | sed 's/^v//')
-CURR_VERSION := $(shell sed 's/^\#define VERSION "\(.*\)"$$/\1/' version.h 2>/dev/null)
-else
-BASE_VERSION := $(shell cat base_version)
-endif
+#ifneq ("$(wildcard .git)","")
+#CFLAGS?=-g -Wall
+#VERSION := $(shell git describe --dirty --tags | sed 's/^v//')
+#CURR_VERSION := $(shell sed 's/^\#define VERSION "\(.*\)"$$/\1/' version.h 2>/dev/null)
+#else
+#BASE_VERSION := $(shell cat base_version)
+#endif
 BINDIR=/usr/local/bin
 ifeq ($(OS),Linux)
-LDLIBS?=-pthread -lutil
+LDLIBS?=-pthread -lutil -lpigpio
 BINDIR=/usr/bin
 INSTGROUP=root
 else
@@ -18,7 +18,7 @@ LDLIBS?=-lpthread -lutil
 endif
 endif
 
-objects=kplex.o fileio.o serial.o bcast.o tcp.o options.o error.o lookup.o mcast.o gofree.o udp.o
+objects=kplex.o fileio.o serial.o bcast.o tcp.o options.o error.o lookup.o mcast.o gofree.o udp.o victron.o nasa_clipper.o
 
 all: version kplex
 
@@ -29,7 +29,7 @@ version:
 	fi
 
 kplex: $(objects)
-	$(CC) -o kplex $(objects) $(LDFLAGS) $(LDLIBS)
+	$(CC) -g -o kplex $(objects) $(LDFLAGS) $(LDLIBS)
 
 tcp.o: tcp.h
 gofree.o: tcp.h
@@ -41,14 +41,10 @@ version.h:
 
 install:
 	test -d "$(DESTDIR)/$(BINDIR)"  || install -d -g $(INSTGROUP) -o root -m 755 $(DESTDIR)/$(BINDIR)
-	install -g $(INSTGROUP) -o root -m 755 kplex $(DESTDIR)/$(BINDIR)/kplex
+	install -g $(INSTGROUP) -o root -m 4755 kplex $(DESTDIR)/$(BINDIR)/kplex
 
 uninstall:
 	-rm -f $(DESTDIR)/$(BINDIR)/kplex
 
 clean:
 	rm -f kplex $(objects)
-
-.PHONY: release
-release:
-	sudo ./release
